@@ -74,12 +74,73 @@ The Graph解决了这个问题，它是一个用于查询区块链数据的索�
 
 同时，我们将用React创建一个前端界面，允许用户进行以下操作：
 
-1. 从部署到区块链上的合约里读取问候。
+1. 从部署到区块链上的合约里读取问候
 
-2. 更新问候语。
+2. 更新问候语
 
-3. 将新铸造的代币从他们的地址发送到另一个地址。
+3. 将新铸造的代币从他们的地址发送到另一个地址
 
-4. 收到代币的地址可以将代币发送给别的地址。
+4. 收到代币的地址可以将代币发送给别的地址
 
-5. 从部署在区块链上的合约里读取代币余额。
+5. 从部署在区块链上的合约里读取代币余额
+
+## 准备工作
+
+1. 安装Node.js
+
+2. 为浏览器安装Metamask插件
+
+我们整个项目将会在测试网上进行，所以你不需要真的ETH，使用测试网的测试币就可以了。
+
+## 开始
+
+1. **创建一个新的React应用程序。**
+
+```bash
+npx create-react-app react-dapp
+```
+
+导航到新创建的文件夹中，使用`npm`或者`yarn`安装`ethers.js`和`hardhat`。
+
+```bash
+npm install ethers hardhat @nomiclabs/hardhat-waffle ethereum-waffle chai @nomiclabs/hardhat-ethers`
+```
+
+2. **安装、配置Ethereum开发环境**
+
+使用`hardhat`初始化一个Ethereum开发环境。
+
+```bash
+npx hardhat
+
+? What do you want to do? Create a sample project
+? Hardhat project root: <Choose default path>`
+```
+
+现在你应该在文件夹的根目录看到以下工件：
+
+**hardhat.config.js** - 整个Hardhat的设置(配置、插件和自定义任务)都包含在这个文件中
+
+**scripts** - 包含名为sample-script.js文件的文件夹，它将在执行时部署你的智能合约
+
+**test** - 包含一个测试脚本示例的文件夹
+
+**contracts** - 包含一个Solidity智能合约示例的文件夹
+
+**由于MetaMask的配置问题，我们需要将HardHat配置中的chain ID更新为1337。我们还需要更新已编译合约的工件的位置，使其位于React应用的src目录中。**
+
+打开`hardhat.config.js`文件，更新`module.exports`，如下：
+
+```js
+module.exports = {
+  solidity: "0.8.4",
+  paths: {
+    artifacts: './src/artifacts',
+  },
+  networks: {
+    hardhat: {
+      chainId: 1337
+    }
+  }
+};`
+```
