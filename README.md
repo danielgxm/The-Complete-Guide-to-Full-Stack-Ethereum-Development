@@ -94,7 +94,7 @@ The Graph解决了这个问题，它是一个用于查询区块链数据的索�
 
 ## 开始
 
-1. **创建一个新的React应用程序。**
+### 创建一个新的React应用程序。
 
 ```bash
 npx create-react-app react-dapp
@@ -106,7 +106,7 @@ npx create-react-app react-dapp
 npm install ethers hardhat @nomiclabs/hardhat-waffle ethereum-waffle chai @nomiclabs/hardhat-ethers`
 ```
 
-2. **安装、配置Ethereum开发环境**
+### 安装、配置Ethereum开发环境
 
 使用`hardhat`初始化一个Ethereum开发环境。
 
@@ -136,11 +136,93 @@ module.exports = {
   solidity: "0.8.4",
   paths: {
     artifacts: './src/artifacts',
-  },
+ },
   networks: {
     hardhat: {
       chainId: 1337
     }
   }
-};`
+};
 ```
+
+### 智能合约
+
+让我们看一下自动生成的示例智能合约**contracts/Greeter.sol**的代码。
+
+```solidity
+//SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+import "hardhat/console.sol";
+
+
+contract Greeter {
+  string greeting;
+
+  constructor(string memory _greeting) {
+    console.log("Deploying a Greeter with greeting:", _greeting);
+    greeting = _greeting;
+  }
+
+  function greet() public view returns (string memory) {
+    return greeting;
+  }
+
+  function setGreeting(string memory _greeting) public {
+    console.log("Changing greeting from '%s' to '%s'", greeting, _greeting);
+    greeting = _greeting;
+  }
+}
+```
+
+这是一个非常基本的智能合约。它有一个Greeting变量，并公开一个函数greet，可以调用该函数来返回Greeting的值。
+
+它还公开了一个函数setGreeting，允许用户更新greeting。当部署到以太坊区块链时，用户可以使用这些方法进行交互。
+
+### 读写以太坊区块链
+
+有两种与智能合约交互的方式：读或写/交易。在我们的合约中，greet可以被视为读，而setGreeting可以被视为写/事务性。
+
+在写入或初始化事务时，必须为写入区块链的事务付费。为了实现这一点，你需要支付gas，这是在以太坊区块链上成功进行交易和执行合约所需的费用或价格。
+
+如果你只是从区块链读取信息，而不是更改或添加任何东西，你就不需要执行交易，也无需支付gas或其他成本，你调用的函数只由你连接的节点执行，所以你不需要支付任何gas，读取是免费的。
+
+在我们的React应用中，我们与智能合约的交互方式是使用ether .js库。合约地址和ABI，将由hardhat从合约中创建。
+
+**什么是ABI?**
+
+ABI代表应用程序二进制接口。您可以将其视为客户端应用程序和以太坊区块链之间的接口。
+
+ABI通常由像HardHat这样的开发框架从Solidity智能合约中编译而来。你也可以经常在Etherscan上找到智能合约的ABI。
+
+### 编译智能合约生成ABI
+
+```bash
+npx hardhat compile
+```
+
+现在，您应该在src目录中看到一个名为artifacts的新文件夹。artifacts/contracts/Greeter.json。json文件包含ABI作为属性之一。当我们需要使用ABI时，我们可以从JavaScript文件中导入它:
+
+```js
+import Greeter from './artifacts/contracts/Greeter.sol/Greeter.json'
+```
+
+可以这样引用ABI：
+
+```js
+console.log("Greeter ABI: ", Greeter.abi)
+```
+
+### 在本地区块链上部署智能合约
+
+接下来，为了能够测试我们的智能合约，我们要把它布置到本地区块链上。
+
+需要首先启动一个本地节点：
+
+```bash
+npx hardhat node
+```
+
+运行该命令后将会看到以下输出：
+
+![](https://gitee.com/DanielGao/picture/raw/master/picture/e176nc82ik77hei3a48s.jpg)
