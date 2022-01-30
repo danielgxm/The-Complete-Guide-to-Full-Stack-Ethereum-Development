@@ -488,7 +488,6 @@ main()
     console.error(error);
     process.exit(1);
   });
-
 ```
 
 现在，可以将新的合约部署到本地测试网或Ropsten测试网上。
@@ -588,7 +587,6 @@ function App() {
 }
 
 export default App;
-
 ```
 
 运行程序
@@ -636,10 +634,7 @@ contract NDToken is ERC20 {
         _mint(msg.sender, 100000 * (10 ** 18));
     }
 }
-
 ```
-
-
 
 构造函数constructor允许您在部署智能合约时初始化Token名称和Token标识，_mint函数允许您发行Token并设置数量。
 
@@ -669,6 +664,8 @@ function allowance(address _owner, address _spender) public view returns (uint25
 部署成功后，就可以和新合约进行交互了。
 
 [ERC20标准的其他示例]([ERC20 | Solidity by Example | 0.8.10](https://solidity-by-example.org/app/erc20/))
+
+[openzeppelin-contracts/ERC20]([openzeppelin-contracts/ERC20.sol at 9b3710465583284b8c4c5d2245749246bb2e0094 · OpenZeppelin/openzeppelin-contracts · GitHub](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/9b3710465583284b8c4c5d2245749246bb2e0094/contracts/token/ERC20/ERC20.sol))
 
 ### 总结
 
