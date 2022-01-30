@@ -488,7 +488,6 @@ main()
     console.error(error);
     process.exit(1);
   });
-
 ```
 
 现在，可以将新的合约部署到本地测试网或Ropsten测试网上。
@@ -588,7 +587,6 @@ function App() {
 }
 
 export default App;
-
 ```
 
 运行程序
@@ -636,10 +634,7 @@ contract NDToken is ERC20 {
         _mint(msg.sender, 100000 * (10 ** 18));
     }
 }
-
 ```
-
-
 
 构造函数constructor允许您在部署智能合约时初始化Token名称和Token标识，_mint函数允许您发行Token并设置数量。
 
