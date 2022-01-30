@@ -227,17 +227,17 @@ npx hardhat node
 
 ![](https://gitee.com/DanielGao/picture/raw/master/picture/e176nc82ik77hei3a48s.jpg)
 
-可以看到，生成了一批用来测试用的帐号和地址，每个地址里预先存入了10000个测试用Eth，稍后我们把这些帐号导入Metamask，就可以用这些帐号进行测试了。
+可以看到，生成了一批用来测试用的帐号和地址，每个地址里预先存入了10000个测试用Eth，将这些帐号信息保存到单独的文件中，稍后我们将把这些帐号导入Metamask，就可以用进行测试了。
 
-### 我们先打开metamask的测试网络
+### 打开metamask的测试网络
 
 ![](https://gitee.com/DanielGao/picture/raw/master/picture/20220130122442.png)
 
-然后把网络切换到`Localhost：8545`。
+把网络切换到`Localhost：8545`。
 
 ![](https://gitee.com/DanielGao/picture/raw/master/picture/xo46g1vi1183hsixq1op.jpeg)
 
-### 接下来，要把合约部署到本地测试网上。
+### 把合约部署到本地测试网上
 
 在此之前，先把**scripts/sample-script.js** 名称修改为 **scripts/deploy.js**。
 
@@ -343,7 +343,6 @@ function App() {
 }
 
 export default App;
-
 ```
 
 ### 测试前端功能
@@ -355,8 +354,6 @@ npm start
 当应用程序加载时，你应该能够获取到greeing的当前值，并将其输出到控制台。您还应该能够使用MetaMask钱包签署合约事物并使用测试Eth来更新greeting的值。
 
 ![](https://gitee.com/DanielGao/picture/raw/master/picture/9a57jbzrwylr2l0rujxm.jpeg)
-
-
 
 ### 将智能合约部署到以太坊的测试网上
 
