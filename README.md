@@ -94,7 +94,7 @@ The Graph解决了这个问题，它是一个用于查询区块链数据的索�
 
 ## 开始
 
-### 创建一个新的React应用程序。
+### 创建一个新的React应用程序
 
 ```bash
 npx create-react-app react-dapp
@@ -227,7 +227,7 @@ npx hardhat node
 
 ![](https://gitee.com/DanielGao/picture/raw/master/picture/e176nc82ik77hei3a48s.jpg)
 
-可以看到，生成了一批用来测试用的帐号和地址，每个地址里预先存入了10000个测试用Eth，将这些帐号信息保存到单独的文件中，稍后我们将把这些帐号导入Metamask，就可以用进行测试了。
+可以看到，生成了一批用来测试用的帐号和地址，每个地址里预先存入了10000个测试用Eth（这些Eth都是用来测试的测试币，没有实际的价值），将这些帐号信息保存到单独的文件中，稍后我们将把这些帐号导入Metamask，就可以用进行测试了。
 
 ### 打开metamask的测试网络
 
@@ -368,3 +368,316 @@ npm start
 接下来，访问这个[测试水龙头](https://faucet.ropsten.be)，给自己发送一些Ropsten上的测试以太币，以便在本教程的其余部分使用。
 
 我们可以通过注册像[Infura](https://infura.io)或[Alchemy](https://www.alchemy.com/)这样的服务来访问Ropsten(或其他任何测试网络)(本教程中使用Infura)
+
+一旦你在Infura或Alchemy中创建了应用，你会得到一个链接，看起来像这样:
+
+```js
+https://ropsten.infura.io/v3/your-project-id
+```
+
+确保将你用来部署智能合约的钱包地址添加到infura/Alchemy的App设置中的`ALLOWLIST ETHEREUM ADDRESSES`变量中。
+
+为了将合约部署到测试网中，我们需要将一些额外的网络信息添加到hardhat的配置中来，其中一个就是我们将要用来部署合约的钱包的私钥。
+
+### 导出私钥
+
+![](https://gitee.com/DanielGao/picture/raw/master/picture/6z0jfvs81xfjqostzca6.png)
+
+> 最好不要把私钥直接硬编码到程序中，而是将其保存在其他地方，比如环境变量，然后从程序中读取。
+
+然后使用以下代码添加一个网络配置项。
+
+```js
+module.exports = {
+  defaultNetwork: "hardhat",
+  paths: {
+    artifacts: './src/artifacts',
+  },
+  networks: {
+    hardhat: {},
+    ropsten: {
+      url: "https://ropsten.infura.io/v3/your-project-id",
+      accounts: [`0x${your-private-key}`]
+    }
+  },
+  solidity: "0.8.4",
+};
+```
+
+### 将智能合约部署到公开测试网
+
+```js
+npx hardhat run scripts/deploy.js --network ropsten
+```
+
+一旦合约部署成功，你就可以和它进行交互了。你现在应该可以在[Etherscan Ropsten Testnet Explorer](https://ropsten.etherscan.io/)上查看部署后的合约了。
+
+### 发行Token
+
+智能合约最常见的用例之一是发行Token，让我们看看如何做到这一点。我们对原理了解的越多，我们就会走得更快、更远。
+
+在`contracts`目录下创建一个名为`Token.sol`的文件。然后在文件中写入以下代码：
+
+```solidity
+//SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+import "hardhat/console.sol";
+
+contract Token {
+  string public name = "Daniel Gao Token";
+  string public symbol = "DGT";
+  uint public totalSupply = 1000000;
+  mapping(address => uint) balances;
+
+  constructor() {
+    balances[msg.sender] = totalSupply;
+  }
+
+  function transfer(address to, uint amount) external {
+    require(balances[msg.sender] >= amount, "Not enough tokens");
+    balances[msg.sender] -= amount;
+    balances[to] += amount;
+  }
+
+  function balanceOf(address account) external view returns (uint) {
+    return balances[account];
+  }
+}
+```
+
+以上代码仅作为演示的作用，并不符合ERC20标准。我们将在下文讲解ERC20标准。
+
+这个合约将发行一个名为`DGT`的Token，总量为1_000_000枚。
+
+编译合约。
+
+```
+npx hardhat compile
+```
+
+在**scripts/deploy.js**中更新部署脚本，将新合约包含进去。
+
+```js
+const hre = require("hardhat");
+
+async function main() {
+  const [deployer] = await hre.ethers.getSigners();
+
+  console.log(
+    "Deploying contracts with the account:",
+    deployer.address
+  );
+
+  const Greeter = await hre.ethers.getContractFactory("Greeter");
+  const greeter = await Greeter.deploy("Hello, World!");
+
+  const Token = await hre.ethers.getContractFactory("Token");
+  const token = await Token.deploy();
+
+  await greeter.deployed();
+  await token.deployed();
+
+  console.log("Greeter deployed to:", greeter.address);
+  console.log("Token deployed to:", token.address);
+}
+
+main()
+  .then(() => process.exit(0))
+  .catch(error => {
+    console.error(error);
+    process.exit(1);
+  });
+
+```
+
+现在，可以将新的合约部署到本地测试网或Ropsten测试网上。
+
+```js
+npx hardhat run scripts/deploy.js --network localhost
+```
+
+合约部署成功后，你就可以将该Token发送给其他地址了。
+
+现在，让我们为前端程序添加相应的功能，用来完成对应的业务。
+
+```js
+import './App.css';
+import { useState } from 'react';
+import { ethers } from 'ethers'
+import Greeter from './artifacts/contracts/Greeter.sol/Greeter.json'
+import Token from './artifacts/contracts/Token.sol/Token.json'
+
+const greeterAddress = "your-contract-address"
+const tokenAddress = "your-contract-address"
+
+function App() {
+  const [greeting, setGreetingValue] = useState()
+  const [userAccount, setUserAccount] = useState()
+  const [amount, setAmount] = useState()
+
+  async function requestAccount() {
+    await window.ethereum.request({ method: 'eth_requestAccounts' });
+  }
+
+  async function fetchGreeting() {
+    if (typeof window.ethereum !== 'undefined') {
+      const provider = new ethers.providers.Web3Provider(window.ethereum)
+      console.log({ provider })
+      const contract = new ethers.Contract(greeterAddress, Greeter.abi, provider)
+      try {
+        const data = await contract.greet()
+        console.log('data: ', data)
+      } catch (err) {
+        console.log("Error: ", err)
+      }
+    }    
+  }
+
+  async function getBalance() {
+    if (typeof window.ethereum !== 'undefined') {
+      const [account] = await window.ethereum.request({ method: 'eth_requestAccounts' })
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const contract = new ethers.Contract(tokenAddress, Token.abi, provider)
+      const balance = await contract.balanceOf(account);
+      console.log("Balance: ", balance.toString());
+    }
+  }
+
+  async function setGreeting() {
+    if (!greeting) return
+    if (typeof window.ethereum !== 'undefined') {
+      await requestAccount()
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      console.log({ provider })
+      const signer = provider.getSigner()
+      const contract = new ethers.Contract(greeterAddress, Greeter.abi, signer)
+      const transaction = await contract.setGreeting(greeting)
+      await transaction.wait()
+      fetchGreeting()
+    }
+  }
+
+  async function sendCoins() {
+    if (typeof window.ethereum !== 'undefined') {
+      await requestAccount()
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+      const contract = new ethers.Contract(tokenAddress, Token.abi, signer);
+      const transation = await contract.transfer(userAccount, amount);
+      await transation.wait();
+      console.log(`${amount} Coins successfully sent to ${userAccount}`);
+    }
+  }
+
+  return (
+    <div className="App">
+      <header className="App-header">
+        <button onClick={fetchGreeting}>Fetch Greeting</button>
+        <button onClick={setGreeting}>Set Greeting</button>
+        <input onChange={e => setGreetingValue(e.target.value)} placeholder="Set greeting" />
+
+        <br />
+        <button onClick={getBalance}>Get Balance</button>
+        <button onClick={sendCoins}>Send Coins</button>
+        <input onChange={e => setUserAccount(e.target.value)} placeholder="Account ID" />
+        <input onChange={e => setAmount(e.target.value)} placeholder="Amount" />
+      </header>
+    </div>
+  );
+}
+
+export default App;
+
+```
+
+运行程序
+
+```
+npm start
+```
+
+我们应该可以点击`Get Balance`，然后在console中看到我们的1_000_000枚Token。
+
+将Token导入Metamask中后，应该也能看到Token的数量。
+
+![](https://gitee.com/DanielGao/picture/raw/master/picture/m3ccxkvae2i7iewalbrk.jpg)
+
+### 发送Token
+
+复制另一个帐户的地址，并使用更新后的React UI将Token发送到该地址。当您检查Token余额时，它应该等于原始数量减去您发送到该地址的数量。
+
+### ERC20 Token
+
+[ERC20令牌标准](https://ethereum.org/en/developers/docs/standards/tokens/erc-20/)定义了一组适用于所有ERC20令牌的规则，使它们能够轻松地相互交互。ERC20让人们可以很容易地铸造自己的代币，这些代币将与以太坊区块链上的其他人发行的Token具有互操作性。
+
+接下来我们将要探索如何发行我们自己的ERC20 Token。
+
+### 安装智能合约库文件
+
+安装OpenZepplin智能合约库。
+
+```js
+npm install @openzeppelin/contracts
+```
+
+将该库中的基础ERC20 token合约库导入我们的文件中。
+
+我们将继承该标准，发行我们自己的Erc20 Token。
+
+```solidty
+//SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+
+contract NDToken is ERC20 {
+    constructor(string memory name, string memory symbol) ERC20(name, symbol) {
+        _mint(msg.sender, 100000 * (10 ** 18));
+    }
+}
+
+```
+
+
+
+构造函数constructor允许您在部署智能合约时初始化Token名称和Token标识，_mint函数允许您发行Token并设置数量。
+
+默认情况下，ERC20将小数位数设置为18(1 Eth=10的18次方wei)，因此在_mint函数中，我们将100,000乘以10的18次方，总共铸造100,000个代币，每个代币有18个小数点位。
+
+为了能够部署合约，我们需要为构造函数传递参数：name和symbol，将在部署脚本中添加以下代码：
+
+```js
+const NDToken = await hre.ethers.getContractFactory("NDToken");
+const ndToken = await NDToken.deploy("Nader Dabit Token", "NDT");
+```
+
+我们的ERC20标准智能合约需要继承和实现接口文件中所有方法：
+
+```solidty
+function name() public view returns (string)
+function symbol() public view returns (string)
+function decimals() public view returns (uint8)
+function totalSupply() public view returns (uint256)
+function balanceOf(address _owner) public view returns (uint256 balance)
+function transfer(address _to, uint256 _value) public returns (bool success)
+function transferFrom(address _from, address _to, uint256 _value) public returns (bool success)
+function approve(address _spender, uint256 _value) public returns (bool success)
+function allowance(address _owner, address _spender) public view returns (uint256 remaining)
+```
+
+部署成功后，就可以和新合约进行交互了。
+
+[ERC20标准的其他示例]([ERC20 | Solidity by Example | 0.8.10](https://solidity-by-example.org/app/erc20/))
+
+### 总结
+
+以上就是本教程所有的内容，很简单，但是很重要，它告诉你该使用什么工具、如何开发、部署、使用一个solidity智能合约程序（Dapp）。希望对你有所帮助。
+
+如果你想使用MetaMask之外的钱包管理软件，请查看[Web3Modal]([GitHub - Web3Modal/web3modal: A single Web3 / Ethereum provider solution for all Wallets](https://github.com/Web3Modal/web3modal))，它通过一个相当简单和可定制的配置，很容易地在你的应用程序中实现对多个钱包管理软件的支持。
+
+在我未来的教程和指南中，我将深入研究更复杂的智能合约开发，以及如何将它们部署为子图，并在其上公开一个GraphQL API，实现分页和全文搜索等功能。
+
+我还将介绍如何使用IPFS和Web3数据库等技术以分布式的方式存储数据。
+
+如果您对未来的教程有任何问题或建议，请留下一些评论并让我知道。谢谢！
