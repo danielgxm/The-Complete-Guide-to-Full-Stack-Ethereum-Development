@@ -665,7 +665,9 @@ function allowance(address _owner, address _spender) public view returns (uint25
 
 [ERC20标准的其他示例]([ERC20 | Solidity by Example | 0.8.10](https://solidity-by-example.org/app/erc20/))
 
+
 [openzeppelin-contracts/ERC20]([openzeppelin-contracts/ERC20.sol at 9b3710465583284b8c4c5d2245749246bb2e0094 · OpenZeppelin/openzeppelin-contracts · GitHub](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/9b3710465583284b8c4c5d2245749246bb2e0094/contracts/token/ERC20/ERC20.sol))
+=======
 
 ### 总结
 
