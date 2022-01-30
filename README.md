@@ -226,3 +226,148 @@ npx hardhat node
 运行该命令后将会看到以下输出：
 
 ![](https://gitee.com/DanielGao/picture/raw/master/picture/e176nc82ik77hei3a48s.jpg)
+
+可以看到，生成了一批用来测试用的帐号和地址，每个地址里预先存入了10000个测试用Eth，稍后我们把这些帐号导入Metamask，就可以用这些帐号进行测试了。
+
+### 我们先打开metamask的测试网络
+
+![](https://gitee.com/DanielGao/picture/raw/master/picture/20220130122442.png)
+
+然后把网络切换到`Localhost：8545`。
+
+![](https://gitee.com/DanielGao/picture/raw/master/picture/xo46g1vi1183hsixq1op.jpeg)
+
+### 接下来，要把合约部署到本地测试网上。
+
+在此之前，先把**scripts/sample-script.js** 名称修改为 **scripts/deploy.js**。
+
+通过以下操作将合约部署到本地测试网，localhost参数表明是要部署到本地测试网。
+
+```js
+npx hardhat run scripts/deploy.js --network localhost
+```
+
+执行成功后，智能合约就被部署到了本地测试网上，cli会输出合约在区块链上的地址
+
+```js
+Greeter deployed to: 0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0
+```
+
+保存好该地址，我们的前端程序将要使用该地址与智能合约进行交互。
+
+> 当合约被成功部署后，它使用了我们启动本地网络时创建的第一个帐户。
+
+要和本地测试网上的合约进行交互，我们需要将前边自动生成的账户（该地址里有测试用的Eth）导入Metamask中，然后通过Metamask与合约进行交互。
+
+![](https://gitee.com/DanielGao/picture/raw/master/picture/96qsky18d9pb964u2udc.jpeg)
+
+现在我们有了一个部署在链上的智能合约，以及一个测试账户。
+
+接下来，我们将使用react的前端与智能合约进行交互。
+
+### 与前端一起工作
+
+在该教程中，我们不会关注UI的美观程度，我们始终关注的是功能的完整性。
+
+将要实现的两个功能：
+
+1. 获取greeting的当前值
+
+2. 授权一个用户可以修改greeting的值
+
+可以分解为以下三个子功能：
+
+1. 创建一个输入域和一些`local state`管理输入值
+
+2. 允许程序连接到当前账户并签署事物
+
+3. 创建可以读写智能合约的函数
+
+打开`src/app.js`，输入以下代码，并将greeterAddress的值设置为已经部署好的智能合约的地址。
+
+```js
+import './App.css';
+import { useState } from 'react';
+import { ethers } from 'ethers'
+import Greeter from './artifacts/contracts/Greeter.sol/Greeter.json'
+
+// Update with the contract address logged out to the CLI when it was deployed 
+const greeterAddress = "your-contract-address"
+
+function App() {
+  // store greeting in local state
+  const [greeting, setGreetingValue] = useState()
+
+  // request access to the user's MetaMask account
+  async function requestAccount() {
+    await window.ethereum.request({ method: 'eth_requestAccounts' });
+  }
+
+  // call the smart contract, read the current greeting value
+  async function fetchGreeting() {
+    if (typeof window.ethereum !== 'undefined') {
+      const provider = new ethers.providers.Web3Provider(window.ethereum)
+      const contract = new ethers.Contract(greeterAddress, Greeter.abi, provider)
+      try {
+        const data = await contract.greet()
+        console.log('data: ', data)
+      } catch (err) {
+        console.log("Error: ", err)
+      }
+    }    
+  }
+
+  // call the smart contract, send an update
+  async function setGreeting() {
+    if (!greeting) return
+    if (typeof window.ethereum !== 'undefined') {
+      await requestAccount()
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner()
+      const contract = new ethers.Contract(greeterAddress, Greeter.abi, signer)
+      const transaction = await contract.setGreeting(greeting)
+      await transaction.wait()
+      fetchGreeting()
+    }
+  }
+
+  return (
+    <div className="App">
+      <header className="App-header">
+        <button onClick={fetchGreeting}>Fetch Greeting</button>
+        <button onClick={setGreeting}>Set Greeting</button>
+        <input onChange={e => setGreetingValue(e.target.value)} placeholder="Set greeting" />
+      </header>
+    </div>
+  );
+}
+
+export default App;
+
+```
+
+### 测试前端功能
+
+```js
+npm start
+```
+
+当应用程序加载时，你应该能够获取到greeing的当前值，并将其输出到控制台。您还应该能够使用MetaMask钱包签署合约事物并使用测试Eth来更新greeting的值。
+
+![](https://gitee.com/DanielGao/picture/raw/master/picture/9a57jbzrwylr2l0rujxm.jpeg)
+
+
+
+### 将智能合约部署到以太坊的测试网上
+
+以太坊有好几个测试网：Ropsten, Rinkeby, or Kovan。我们可以将合约部署到这些测试网上，以便可以在不部署到主网的情况下获取到一个公开可访问的版本。
+
+在本教程中，我们将部署到Ropsten测试网络。
+
+首先将网络切换到Ropsten。
+
+![](https://gitee.com/DanielGao/picture/raw/master/picture/086v4ko9t6vkq64pdfzd.jpeg)
+
+接下来，访问这个[测试水龙头](https://faucet.ropsten.be)，给自己发送一些Ropsten上的测试以太币，以便在本教程的其余部分使用。
+
+我们可以通过注册像[Infura](https://infura.io)或[Alchemy](https://www.alchemy.com/)这样的服务来访问Ropsten(或其他任何测试网络)(本教程中使用Infura)
