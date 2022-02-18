@@ -29,7 +29,7 @@
 
 在构建智能合约时，你需要一种在测试环境下部署合约、运行测试和调试代码的方法可靠方法。
 
-您还需要一种方法来将Solidity代码编译成可以在客户端应用程序中运行的代码——在我们的例子中是React。稍后我们将进一步了解它的工作原理。
+你还需要一种方法来将Solidity代码编译成可以在客户端应用程序中运行的代码——在我们的例子中是React。稍后我们将进一步了解它的工作原理。
 
 Hardhat是一个以太坊开发环境和框架，专为全栈开发而设计，也是我将在本教程中使用的框架。
 
@@ -47,7 +47,7 @@ Ethers.js旨在成为一个完整而紧凑的库，用于从客户端JavaScript�
 
 Metamask用来进行帐户管理，并将当前用户连接到区块链。MetaMask允许用户以几种不同的方式管理他们的帐户和密钥，同时将它们与站点上下文进行隔离。
 
-一旦用户连接了MetaMask钱包，作为开发人员，您可以与全球所有可用的以太坊API（window.Ethereum）进行交互，该API可识别兼容web3的浏览器的用户（如MetaMask用户），并且每当您请求事务签名时，MetaMask将以尽可能容易理解的方式提示用户。
+一旦用户连接了MetaMask钱包，作为开发人员，你可以与全球所有可用的以太坊API（window.Ethereum）进行交互，该API可识别兼容web3的浏览器的用户（如MetaMask用户），并且每当你请求事务签名时，MetaMask将以尽可能容易理解的方式提示用户。
 
 ### 4. React
 
@@ -191,7 +191,7 @@ contract Greeter {
 
 **什么是ABI?**
 
-ABI代表应用程序二进制接口。您可以将其视为客户端应用程序和以太坊区块链之间的接口。
+ABI代表应用程序二进制接口。你可以将其视为客户端应用程序和以太坊区块链之间的接口。
 
 ABI通常由像HardHat这样的开发框架从Solidity智能合约中编译而来。你也可以经常在Etherscan上找到智能合约的ABI。
 
@@ -201,7 +201,7 @@ ABI通常由像HardHat这样的开发框架从Solidity智能合约中编译而�
 npx hardhat compile
 ```
 
-现在，您应该在src目录中看到一个名为artifacts的新文件夹。artifacts/contracts/Greeter.json。json文件包含ABI作为属性之一。当我们需要使用ABI时，我们可以从JavaScript文件中导入它:
+现在，你应该在src目录中看到一个名为artifacts的新文件夹。artifacts/contracts/Greeter.json。json文件包含ABI作为属性之一。当我们需要使用ABI时，我们可以从JavaScript文件中导入它:
 
 ```js
 import Greeter from './artifacts/contracts/Greeter.sol/Greeter.json'
@@ -351,7 +351,7 @@ export default App;
 npm start
 ```
 
-当应用程序加载时，你应该能够获取到greeing的当前值，并将其输出到控制台。您还应该能够使用MetaMask钱包签署合约事物并使用测试Eth来更新greeting的值。
+当应用程序加载时，你应该能够获取到greeing的当前值，并将其输出到控制台。你还应该能够使用MetaMask钱包签署合约事物并使用测试Eth来更新greeting的值。
 
 ![](https://gitee.com/DanielGao/picture/raw/master/picture/9a57jbzrwylr2l0rujxm.jpeg)
 
@@ -603,7 +603,7 @@ npm start
 
 ### 发送Token
 
-复制另一个帐户的地址，并使用更新后的React UI将Token发送到该地址。当您检查Token余额时，它应该等于原始数量减去您发送到该地址的数量。
+复制另一个帐户的地址，并使用更新后的React UI将Token发送到该地址。当你检查Token余额时，它应该等于原始数量减去你发送到该地址的数量。
 
 ### ERC20 Token
 
@@ -636,7 +636,7 @@ contract NDToken is ERC20 {
 }
 ```
 
-构造函数constructor允许您在部署智能合约时初始化Token名称和Token标识，_mint函数允许您发行Token并设置数量。
+构造函数constructor允许你在部署智能合约时初始化Token名称和Token标识，_mint函数允许你发行Token并设置数量。
 
 默认情况下，ERC20将小数位数设置为18(1 Eth=10的18次方wei)，因此在_mint函数中，我们将100,000乘以10的18次方，总共铸造100,000个代币，每个代币有18个小数点位。
 
@@ -676,4 +676,4 @@ function allowance(address _owner, address _spender) public view returns (uint25
 
 我还将介绍如何使用IPFS和Web3数据库等技术以分布式的方式存储数据。
 
-如果您对未来的教程有任何问题或建议，请留下一些评论并让我知道。谢谢！
+如果你对未来的教程有任何问题或建议，请留下一些评论并让我知道。谢谢！
