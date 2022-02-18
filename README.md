@@ -103,10 +103,10 @@ npx create-react-app react-dapp
 导航到新创建的文件夹中，使用`npm`或者`yarn`安装`ethers.js`和`hardhat`。
 
 ```bash
-npm install ethers hardhat @nomiclabs/hardhat-waffle ethereum-waffle chai @nomiclabs/hardhat-ethers`
+npm install ethers hardhat @nomiclabs/hardhat-waffle ethereum-waffle chai @nomiclabs/hardhat-ethers
 ```
 
-### 安装、配置Ethereum开发环境
+## 安装、配置Ethereum开发环境
 
 使用`hardhat`初始化一个Ethereum开发环境。
 
@@ -114,7 +114,7 @@ npm install ethers hardhat @nomiclabs/hardhat-waffle ethereum-waffle chai @nomic
 npx hardhat
 
 ? What do you want to do? Create a sample project
-? Hardhat project root: <Choose default path>`
+? Hardhat project root: <Choose default path>
 ```
 
 现在你应该在文件夹的根目录看到以下工件：
@@ -664,10 +664,7 @@ function allowance(address _owner, address _spender) public view returns (uint25
 部署成功后，就可以和新合约进行交互了。
 
 [ERC20标准的其他示例]([ERC20 | Solidity by Example | 0.8.10](https://solidity-by-example.org/app/erc20/))
-
-
 [openzeppelin-contracts/ERC20]([openzeppelin-contracts/ERC20.sol at 9b3710465583284b8c4c5d2245749246bb2e0094 · OpenZeppelin/openzeppelin-contracts · GitHub](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/9b3710465583284b8c4c5d2245749246bb2e0094/contracts/token/ERC20/ERC20.sol))
-=======
 
 ### 总结
 
