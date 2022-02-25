@@ -410,7 +410,7 @@ npx hardhat run scripts/deploy.js --network ropsten
 
 一旦合约部署成功，你就可以和它进行交互了。你现在应该可以在[Etherscan Ropsten Testnet Explorer](https://ropsten.etherscan.io/)上查看部署后的合约了。
 
-现在修改一下前端程序，与部署到ropsten测试网上的合约进行交互一下吧。
+现在修改一下前端程序，与部署到ropsten测试网上的合约交互一下吧。
 
 ### 发行Token
 
