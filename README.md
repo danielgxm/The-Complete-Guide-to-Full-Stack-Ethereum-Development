@@ -375,8 +375,6 @@ npm start
 https://ropsten.infura.io/v3/your-project-id
 ```
 
-确保将你用来部署智能合约的钱包地址添加到infura/Alchemy的App设置中的`ALLOWLIST ETHEREUM ADDRESSES`变量中。
-
 为了将合约部署到测试网中，我们需要将一些额外的网络信息添加到hardhat的配置中来，其中一个就是我们将要用来部署合约的钱包的私钥。
 
 ### 导出私钥
@@ -397,7 +395,7 @@ module.exports = {
     hardhat: {},
     ropsten: {
       url: "https://ropsten.infura.io/v3/your-project-id",
-      accounts: [`0x${your-private-key}`]
+      accounts: [`your-private-key`]
     }
   },
   solidity: "0.8.4",
