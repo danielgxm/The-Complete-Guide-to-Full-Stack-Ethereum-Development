@@ -10,6 +10,7 @@ contract Token {
     string public symbol = "DGT";
     //Token总量
     uint256 public totalSupply = 1_000_000;
+
     //地址余额
     mapping(address => uint256) balances;
 
