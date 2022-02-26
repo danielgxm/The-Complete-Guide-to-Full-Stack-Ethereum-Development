@@ -647,7 +647,7 @@ const NDToken = await hre.ethers.getContractFactory("NDToken");
 const ndToken = await NDToken.deploy("Nader Dabit Token", "NDT");
 ```
 
-我们的ERC20标准智能合约需要继承和实现接口文件中所有方法：
+Openzepplin的ERC20标准智能合约实现了ERC20接口中的所有方法：
 
 ```solidty
 function name() public view returns (string)
