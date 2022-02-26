@@ -15,19 +15,29 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
 
 /**
  * @type import('hardhat/config').HardhatUserConfig
+ * 部署到本地测试网
  */
 module.exports = {
   solidity: "0.8.4",
   paths: {
     artifacts: './src/artifacts',
- },
+  },
   networks: {
     hardhat: {
       chainId: 1337
-    },
-    ropsten: {
-      url: "https://ropsten.infura.io/v3/project-id",
-      accounts: [`your-private-key`]
     }
   }
 };
+//部署到公共测试网
+// module.exports = {
+//   solidity: "0.8.4",
+//   paths: {
+//     artifacts: './src/artifacts',
+//  },
+//   networks: {
+//     ropsten: {
+//       url: "https://ropsten.infura.io/v3/project-id",
+//       accounts: [`your-private-key`]
+//     }
+//   }
+// };
